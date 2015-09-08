@@ -14,11 +14,9 @@ sc_opcode_fun=( $(grep -rhA2 '\"SC_OPCODE' ../translations/source/ru/ | sed -e '
 
 i=0
 
-echo ${sc_opcode_fun[$i]}
-
-while [ ${sc_opcode_fun[$i]} != "" ] #Будем выполнять цикл, пока $again будет равно "yes"
+while [ ${sc_opcode_fun[$i]} != "" ] 
 	do
-		echo "The name you entered is $i"
+		echo "$i"
 		(( i++ ))
 	done
 
@@ -27,6 +25,5 @@ while [ ${sc_opcode_fun[$i]} != "" ] #Будем выполнять цикл, п
 #grep -rh '\"PRICING_FUNCNAME' ../translations/source/ru/ | cut -c 2- | sed 's/...$//'
 
 #echo ${sc_opcode_fun[@]}
-echo "выход"
 
 exit 0
