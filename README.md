@@ -1,2 +1,2 @@
-# loconfunmacro
-The Macros merges describing the function in LO
+# loconfuscripts
+The script merges describing the function in LO
