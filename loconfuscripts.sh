@@ -47,30 +47,35 @@ i=0
 while [[ ${sc_opcode_fun[$i]} != "" ]] 
 	do
 	#RU:Собираем и записываем в файл в порядке: Имя_Функции, KeyID, Имя_Макроса
-	echo "${sc_opcode_fun[$i]}"
 	echo "${sc_opcode_fun[$i]}" >> fun_list.txt
 	stringQTZ=$(grep -rh "||${sc_opcode_fun[$i]/\./\\\.}\"" "$core_resource")
 	echo "${stringQTZ:17:5}" >> fun_list.txt
 	(( i++ ))
 	echo "${sc_opcode_fun[$i]}" >> fun_list.txt
 
-	#stringSEARCH=${sc_opcode_fun[$i]}
-
-	echo "${sc_opcode_fun[$i]}"
 	#RU:Собираем и записываем в файл в порядке: Описание_из_описания, KeyID_описания, Имя_Макроса_описания,
 	stringKEY=$(grep -A17 "${sc_opcode_fun[$i]}"'$' "$scfuncs" | sed 's/^[ \t]*//' | grep "qtz")
 	stringNMDG=$(grep -A17 "${sc_opcode_fun[$i]}"'$' "$scfuncs" | sed 's/^[ \t]*//;' | grep "U2S")
 	stringNMDG=$( echo $stringNMDG | sed -e 's/...$//' )
 	stringDG=$( echo $stringKEY | sed -e 's/..$//' )
+	strHELP=$(grep -rhA4 "\"${stringNMDG:5}\"" $helpcontent | 
+		  sed -e :a -e 's/<[^>]*>//g;/</N;//ba;s/^[ \t]*//;' | sed '/Syntax/,$d' | tr -d '\n')
 	
 	#RU:Пишем в файлик
 	echo "${stringDG:22}" >> fun_list.txt
 	echo "${stringKEY:15:5}" >> fun_list.txt
 	echo "${stringNMDG:5}" >> fun_list.txt
-	#echo "$strHELP" >> fun_list.txt
+	echo "${stringNMDG:5}"
+	echo "$strHELP" >> fun_list.txt
 	echo "" >> fun_list.txt
 	(( i++ ))
-
+	
+	if [[ ${sc_opcode_fun[$i]} == "MULTIPLE.OPERATIONS" || ${sc_opcode_fun[$i]} == "GOALSEEK" || ${sc_opcode_fun[$i]} == "MVALUE" ]] ||
+	   [[ ${sc_opcode_fun[$i]} == "MULTIRANGE" || ${sc_opcode_fun[$i]} == "NEG" ]]
+		then 
+		i=$i+2
+	fi
+		
 	done
 
 date_funcname_fun=( $(grep -rhA2 '\"DATE_FUNCNAME' "$datefunc" | 
@@ -82,7 +87,6 @@ i=0
 while [[ ${date_funcname_fun[$i]} != "" ]] 
 	do
 	#RU:Собираем и записываем в файл в порядке: Имя_Функции, KeyID, Имя_Макроса
-	echo "${date_funcname_fun[$i]}"
 	echo "${date_funcname_fun[$i]}" >> fun_list.txt
 	stringQTZ=$(grep -rh "||${date_funcname_fun[$i]}\"" "$file_datefunc")
 	echo "${stringQTZ:20:5}" >> fun_list.txt
@@ -96,14 +100,14 @@ while [[ ${date_funcname_fun[$i]} != "" ]]
 	
 	stringKEY=${file_tac:15:5} 				#RU:Обрезаем всё лишнее с ключа
 	stringDG=$( echo "${file_tac:22}" | sed -e 's/..$//')	#RU:Обрезаем начало строки для описания
-
-	#strHELP=$(grep -rhA4 "\"${stringSEARCH:3}\"" $helpcontent | sed -e :a -e 's/<[^>]*>//g;/</N;//ba' | sed 's/^[ \t]*//;' | sed '/Syntax/,$d')
-	
+	strHELP=$(grep -rhA4 "\"$stringSEARCH\"" $helpcontent | 
+		  sed -e :a -e 's/<[^>]*>//g;/</N;//ba;s/^[ \t]*//;' | sed '/Syntax/,$d' | tr -d '\n')
+		
 	#RU:Пишем в файлик
 	echo "${stringDG}" >> fun_list.txt
 	echo "${stringKEY}" >> fun_list.txt
 	echo "$stringSEARCH" >> fun_list.txt
-	#echo "$strHELP" >> fun_list.txt
+	echo "$strHELP" >> fun_list.txt
 	echo "" >> fun_list.txt
 	(( i++ ))
 
@@ -131,14 +135,14 @@ while [[ ${analysis_fun[$i]} != "" ]]
 
 	stringKEY=${file_tac:15:5} 				#RU:Обрезаем всё лишнее с ключа
 	stringDG=$( echo "${file_tac:22}" | sed -e 's/..$//')	#RU:Обрезаем начало строки для описания
-
-	#strHELP=$(grep -rhA4 "\"${stringSEARCH:3}\"" $helpcontent | sed -e :a -e 's/<[^>]*>//g;/</N;//ba' | sed 's/^[ \t]*//;' | sed '/Syntax/,$d')
+	strHELP=$(grep -rhA4 "\"$stringSEARCH\"" $helpcontent |
+		  sed -e :a -e 's/<[^>]*>//g;/</N;//ba;s/^[ \t]*//;' | sed '/Syntax/,$d' | tr -d '\n')
 	
 	#RU:Пишем в файлик
 	echo "${stringDG}" >> fun_list.txt
 	echo "${stringKEY}" >> fun_list.txt
 	echo "$stringSEARCH" >> fun_list.txt
-	#echo "$strHELP" >> fun_list.txt
+	echo "$strHELP" >> fun_list.txt
 	echo "" >> fun_list.txt
 	(( i++ ))
 
@@ -166,13 +170,14 @@ while [[ ${pricing_fun[$i]} != "" ]]
 	
 	stringKEY=${file_tac:15:5} 					#RU:Обрезаем всё лишнее с ключа
 	stringDG=$( echo "${file_tac:22}" | sed -e 's/..$//')	#RU:Обрезаем начало строки для описания
-	#strHELP=$(grep -rhA4 "\"${stringSEARCH:3}\"" $helpcontent | sed -e :a -e 's/<[^>]*>//g;/</N;//ba' | sed 's/^[ \t]*//;' | sed '/Syntax/,$d')
+	strHELP=$(grep -rhA4 "\"$stringSEARCH\"" $helpcontent | 
+		  sed -e :a -e 's/<[^>]*>//g;/</N;//ba;s/^[ \t]*//;' | sed '/Syntax/,$d' | tr -d '\n')
 	
 	#RU:Пишем в файлик
 	echo "${stringDG}" >> fun_list.txt
 	echo "${stringKEY}" >> fun_list.txt
 	echo "$stringSEARCH" >> fun_list.txt
-	#echo "$strHELP" >> fun_list.txt
+	echo "$strHELP" >> fun_list.txt
 	echo "" >> fun_list.txt
 	(( i++ ))
 
