@@ -37,77 +37,79 @@ declare -a analysis_fun
 declare -a pricing_fun
 
 # #RU:Делаем выборку функций и из кодов из файла
-# sc_opcode_fun=( $(grep -rhA2 '\"SC_OPCODE' "$resource" | 
-# 	sed -e '/\"string.text\"/d'  -e 's/msgid \"//' -e 's/\\n\"//' -e 's/\"//' -e '2~2d' |
-# 	sed '1!G;h;$!d')) #переворачиваем сторки
-# i=0
+sc_opcode_fun=( $(grep -rhA2 '\"SC_OPCODE' "$resource" | 
+	sed -e '/\"string.text\"/d'  -e 's/msgid \"//' -e 's/\\n\"//' -e 's/\"//' -e '2~2d' |
+	sed -e '/SC_OPCODE_ERROR_T/!s/SC_OPCODE_ERROR/#SC_OPCODE_ERROR/g' -e '/ *#/d' -e '/SC_OPCODE_TABLE_REF/d' |
+	sed -e '/SC_OPCODE_NO_NAME/d' -e '1!G;h;$!d')) #переворачиваем сторки
+
+i=0
 
 #RU:Собираем и записываем в файл в порядке: Имя_Функции, KeyID, Имя_Макроса, Описание_из_описания, Имя_Макроса_описания,
 #RU:Описание_из_Help, Имя_Макроса_описания_Help
-# while [[ ${sc_opcode_fun[$i]} != "" ]] 
-# 	do
-# 	#RU:Собираем и записываем в файл в порядке: Имя_Функции, KeyID, Имя_Макроса
-# 	echo "${sc_opcode_fun[$i]}"
-# 	echo "${sc_opcode_fun[$i]}" >> fun_list.txt
-# 	stringQTZ=$(grep -rh "||${sc_opcode_fun[$i]/\./\\\.}\"" "$core_resource")
-# 	echo "${stringQTZ:17:5}" >> fun_list.txt
-# 	(( i++ ))
-# 	echo "${sc_opcode_fun[$i]}" >> fun_list.txt
-# 
-# 	stringSEARCH=${sc_opcode_fun[$i]:10}
-# 	strTEST=$stringSEARCH
-# 	
-# 	#RU: Из-за того что кто-то не подумавши лепит названия макросам нужно проверять имена (обработал 50 исключений из 240)
-# 	#EN: made 50 exclusions from 240
-# 	if [[ ${sc_opcode_fun[$i]: -3} == "HYP" || ${sc_opcode_fun[$i]:10:3} == "ARC" ]]
-# 		then
-# 		stringTMP=${sc_opcode_fun[$i]:9}
-# 		stringSEARCH="${stringTMP//_/}"
-# 	elif [[ $strTEST == "CHISQ_INV_MS" 	|| $strTEST == "CHISQ_DIST_MS" 		|| $strTEST == "BETA_INV_MS" 	]] ||
-# 	     [[ $strTEST == "BETA_DIST_MS" 	|| $strTEST == "LOG_INV_MS" 		|| $strTEST == "CHI_TEST_MS" 	]] || 
-# 	     [[ $strTEST == "T_INV_MS" 		|| $strTEST == "GAMMA_INV_MS" 		|| $strTEST == "GAMMA_DIST_MS" 	]] || 
-# 	     [[ $strTEST == "CHI_INV_MS" 	|| $strTEST == "NORM_INV_MS" 		|| $strTEST == "T_TEST_MS" 	]] || 
-# 	     [[ $strTEST == "T_TEST_MS" 	|| $strTEST == "NEG_BINOM_DIST_MS" 	|| $strTEST == "T_DIST_MS" 	]] || 
-# 	     [[ $strTEST == "LOG_NORM_DIST_MS" 	|| $strTEST == "NORM_DIST_MS" 		|| $strTEST == "GAMMA_LN_MS" 	]]
-# 		then
-# 		stringTMP=${strTEST//_/}
-# 		stringSEARCH="${stringTMP//MS/_MS}"
-# 		
-# 	elif [[ $strTEST == "CHISQ_INV" 	|| $strTEST == "CHISQ_DIST" 	|| $strTEST == "GET_PIVOT_DATA" ]] ||
-# 	     [[ $strTEST == "BETA_INV" 		|| $strTEST == "BETA_DIST" 	|| $strTEST == "LOG_INV" 	]] ||
-# 	     [[ $strTEST == "CHI_TEST" 		|| $strTEST == "T_INV" 		|| $strTEST == "GAMMA_INV"  	]] ||
-# 	     [[ $strTEST == "NORM_INV" 		|| $strTEST == "T_TEST" 	|| $strTEST == "NEG_BINOM_VERT" ]] ||
-# 	     [[ $strTEST == "AVERAGE_IFS" 	|| $strTEST == "SUM_IFS" 	|| $strTEST == "AVERAGE_IF" 	]] ||
-# 	     [[ $strTEST == "MIN_A" 		|| $strTEST == "GAMMA_LN" 	|| $strTEST == "FISHER_INV" 	]] ||
-# 	     [[ $strTEST == "IF_ERROR" 		|| $strTEST == "GAMMA_LN" 	|| $strTEST == "FISHER_INV" 	]] ||
-# 	     [[ $strTEST == "CHI_INV" 		|| $strTEST == "COUNT_IFS"  	|| $strTEST == "MAX_A" 		]] ||
-# 	     [[ $strTEST == "IF_NA" ]]
-# 		then
-# 		stringSEARCH=${strTEST//_/}
-# 	fi
-# 	
-# 	stringSEARCH="SC_HID_FUNC_$stringSEARCH"
-# 	
-# 	echo "$stringSEARCH"
-# 	#RU:Собираем и записываем в файл в порядке: Описание_из_описания, KeyID_описания, Имя_Макроса_описания,
-# 	#RU: Кручу верчу - запутать хочу. Бред сивой кобылы, но по другому не знаю как
-# 	file_tac=$(sed "/$stringSEARCH/,$ d" "$scfuncs" | tac | sed -e "/String 1$/,$ d" -e 's/^[\t]*//' -e 's/[{}]//' -e 's/[;]$//' | tac )
-# 	file_tac=$(echo $file_tac | grep -ho 'qtz.*String 2')
-# 
-#  	stringKEY=${file_tac:9:5} 					#RU:Обрезаем всё лишнее с ключа
-#  	stringDG=$( echo "${file_tac:16}" | sed -e 's/..........$//')	#RU:Обрезаем начало строки для описания
-# 	stringNMDG=$( grep -ho "${stringSEARCH}\"" "$scfuncs")		#RU:Находим имя макроса
-# 	strHELP=$(grep -rhA4 "\"${stringSEARCH:3}\"" $helpcontent | sed -e :a -e 's/<[^>]*>//g;/</N;//ba' | sed 's/^[ \t]*//;' | sed '/Syntax/,$d')
-# 	
-# 	#RU:Пишем в файлик
-# 	echo "${stringDG}" >> fun_list.txt
-# 	echo "${stringKEY}" >> fun_list.txt
-# 	echo "${stringNMDG/\"/}" >> fun_list.txt
-# 	echo "$strHELP" >> fun_list.txt
-# 	echo "" >> fun_list.txt
-# 	(( i++ ))
-# 
-# 	done
+while [[ ${sc_opcode_fun[$i]} != "" ]] 
+	do
+	#RU:Собираем и записываем в файл в порядке: Имя_Функции, KeyID, Имя_Макроса
+	echo "${sc_opcode_fun[$i]}"
+	echo "${sc_opcode_fun[$i]}" >> fun_list.txt
+	stringQTZ=$(grep -rh "||${sc_opcode_fun[$i]/\./\\\.}\"" "$core_resource")
+	echo "${stringQTZ:17:5}" >> fun_list.txt
+	(( i++ ))
+	echo "${sc_opcode_fun[$i]}" >> fun_list.txt
+
+	stringSEARCH=${sc_opcode_fun[$i]:10}
+	strTEST=$stringSEARCH
+	
+	#RU: Из-за того что кто-то не подумавши лепит названия макросам нужно проверять имена (обработал 50 исключений из 240)
+	#EN: made 50 exclusions from 240
+	if [[ ${sc_opcode_fun[$i]: -3} == "HYP" || ${sc_opcode_fun[$i]:10:3} == "ARC" ]]
+		then
+		stringTMP=${sc_opcode_fun[$i]:9}
+		stringSEARCH="${stringTMP//_/}"
+	elif [[ $strTEST == "CHISQ_INV_MS" 	|| $strTEST == "CHISQ_DIST_MS" 		|| $strTEST == "BETA_INV_MS" 	]] ||
+	     [[ $strTEST == "BETA_DIST_MS" 	|| $strTEST == "LOG_INV_MS" 		|| $strTEST == "CHI_TEST_MS" 	]] || 
+	     [[ $strTEST == "T_INV_MS" 		|| $strTEST == "GAMMA_INV_MS" 		|| $strTEST == "GAMMA_DIST_MS" 	]] || 
+	     [[ $strTEST == "CHI_INV_MS" 	|| $strTEST == "NORM_INV_MS" 		|| $strTEST == "T_TEST_MS" 	]] || 
+	     [[ $strTEST == "T_TEST_MS" 	|| $strTEST == "NEG_BINOM_DIST_MS" 	|| $strTEST == "T_DIST_MS" 	]] || 
+	     [[ $strTEST == "LOG_NORM_DIST_MS" 	|| $strTEST == "NORM_DIST_MS" 		|| $strTEST == "GAMMA_LN_MS" 	]]
+		then
+		stringTMP=${strTEST//_/}
+		stringSEARCH="${stringTMP//MS/_MS}"
+		
+	elif [[ $strTEST == "CHISQ_INV" 	|| $strTEST == "CHISQ_DIST" 	|| $strTEST == "GET_PIVOT_DATA" ]] ||
+	     [[ $strTEST == "BETA_INV" 		|| $strTEST == "BETA_DIST" 	|| $strTEST == "LOG_INV" 	]] ||
+	     [[ $strTEST == "CHI_TEST" 		|| $strTEST == "T_INV" 		|| $strTEST == "GAMMA_INV"  	]] ||
+	     [[ $strTEST == "NORM_INV" 		|| $strTEST == "T_TEST" 	|| $strTEST == "NEG_BINOM_VERT" ]] ||
+	     [[ $strTEST == "AVERAGE_IFS" 	|| $strTEST == "SUM_IFS" 	|| $strTEST == "AVERAGE_IF" 	]] ||
+	     [[ $strTEST == "MIN_A" 		|| $strTEST == "GAMMA_LN" 	|| $strTEST == "FISHER_INV" 	]] ||
+	     [[ $strTEST == "IF_ERROR" 		|| $strTEST == "GAMMA_LN" 	|| $strTEST == "FISHER_INV" 	]] ||
+	     [[ $strTEST == "CHI_INV" 		|| $strTEST == "COUNT_IFS"  	|| $strTEST == "MAX_A" 		]] ||
+	     [[ $strTEST == "IF_NA" ]]
+		then
+		stringSEARCH=${strTEST//_/}
+	fi
+	
+	stringSEARCH="SC_HID_FUNC_$stringSEARCH"
+	
+	echo "$stringSEARCH"
+	#RU:Собираем и записываем в файл в порядке: Описание_из_описания, KeyID_описания, Имя_Макроса_описания,
+	#RU: Кручу верчу - запутать хочу. Бред сивой кобылы, но по другому не знаю как
+	file_tac=$(sed "/$stringSEARCH/,$ d" "$scfuncs" | tac | sed -e "/String 1$/,$ d" -e 's/^[\t]*//' -e 's/[{}]//' -e 's/[;]$//' | tac )
+	file_tac=$(echo $file_tac | grep -ho 'qtz.*String 2')
+
+ 	stringKEY=${file_tac:9:5} 					#RU:Обрезаем всё лишнее с ключа
+ 	stringDG=$( echo "${file_tac:16}" | sed -e 's/..........$//')	#RU:Обрезаем начало строки для описания
+	stringNMDG=$( grep -ho "${stringSEARCH}\"" "$scfuncs")		#RU:Находим имя макроса
+	#strHELP=$(grep -rhA4 "\"${stringSEARCH:3}\"" $helpcontent | sed -e :a -e 's/<[^>]*>//g;/</N;//ba' | sed 's/^[ \t]*//;' | sed '/Syntax/,$d')
+	
+	#RU:Пишем в файлик
+	echo "${stringDG}" >> fun_list.txt
+	echo "${stringKEY}" >> fun_list.txt
+	echo "${stringNMDG/\"/}" >> fun_list.txt
+	#echo "$strHELP" >> fun_list.txt
+	echo "" >> fun_list.txt
+	(( i++ ))
+
+	done
 
 date_funcname_fun=( $(grep -rhA2 '\"DATE_FUNCNAME' "$datefunc" | 
 	sed -e '/\"string.text\"/d'  -e 's/msgid \"//' -e 's/\\n\"//' -e 's/\"//' -e '2~2d' |
@@ -139,7 +141,7 @@ while [[ ${date_funcname_fun[$i]} != "" ]]
 	echo "${stringDG}" >> fun_list.txt
 	echo "${stringKEY}" >> fun_list.txt
 	echo "$stringSEARCH" >> fun_list.txt
-	echo "$strHELP" >> fun_list.txt
+	#echo "$strHELP" >> fun_list.txt
 	echo "" >> fun_list.txt
 	(( i++ ))
 
@@ -202,7 +204,6 @@ while [[ ${pricing_fun[$i]} != "" ]]
 	
 	stringKEY=${file_tac:15:5} 					#RU:Обрезаем всё лишнее с ключа
 	stringDG=$( echo "${file_tac:22}" | sed -e 's/..$//')	#RU:Обрезаем начало строки для описания
-
 	#strHELP=$(grep -rhA4 "\"${stringSEARCH:3}\"" $helpcontent | sed -e :a -e 's/<[^>]*>//g;/</N;//ba' | sed 's/^[ \t]*//;' | sed '/Syntax/,$d')
 	
 	#RU:Пишем в файлик
