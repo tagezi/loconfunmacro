@@ -8,7 +8,7 @@
 #RU:Переменные для путей к файлам
 resource="../translations/source/ru/formula/source/core/resource.po"
 core_resource="../workdir/SrsPartTarget/formula/source/core/resource/core_resource.src"
-scfuncs="../workdir/SrsPartTarget/sc/source/ui/src/scfuncs.src"
+scfuncs="../workdir/SrsPartMergeTarget/sc/source/ui/src/scfuncs.src"
 helpcontent="../helpcontent2/source/text/scalc/01/"
 helpcontent_ls=( $(ls "$helpcontent"))
 datefunc="../translations/source/ru/scaddins/source/datefunc.po"
@@ -44,8 +44,6 @@ sc_opcode_fun=( $(grep -rhA2 '\"SC_OPCODE' "$resource" |
 
 i=0
 
-#RU:Собираем и записываем в файл в порядке: Имя_Функции, KeyID, Имя_Макроса, Описание_из_описания, Имя_Макроса_описания,
-#RU:Описание_из_Help, Имя_Макроса_описания_Help
 while [[ ${sc_opcode_fun[$i]} != "" ]] 
 	do
 	#RU:Собираем и записываем в файл в порядке: Имя_Функции, KeyID, Имя_Макроса
@@ -56,55 +54,19 @@ while [[ ${sc_opcode_fun[$i]} != "" ]]
 	(( i++ ))
 	echo "${sc_opcode_fun[$i]}" >> fun_list.txt
 
-	stringSEARCH=${sc_opcode_fun[$i]:10}
-	strTEST=$stringSEARCH
-	
-	#RU: Из-за того что кто-то не подумавши лепит названия макросам нужно проверять имена (обработал 50 исключений из 240)
-	#EN: made 50 exclusions from 240
-	if [[ ${sc_opcode_fun[$i]: -3} == "HYP" || ${sc_opcode_fun[$i]:10:3} == "ARC" ]]
-		then
-		stringTMP=${sc_opcode_fun[$i]:9}
-		stringSEARCH="${stringTMP//_/}"
-	elif [[ $strTEST == "CHISQ_INV_MS" 	|| $strTEST == "CHISQ_DIST_MS" 		|| $strTEST == "BETA_INV_MS" 	]] ||
-	     [[ $strTEST == "BETA_DIST_MS" 	|| $strTEST == "LOG_INV_MS" 		|| $strTEST == "CHI_TEST_MS" 	]] || 
-	     [[ $strTEST == "T_INV_MS" 		|| $strTEST == "GAMMA_INV_MS" 		|| $strTEST == "GAMMA_DIST_MS" 	]] || 
-	     [[ $strTEST == "CHI_INV_MS" 	|| $strTEST == "NORM_INV_MS" 		|| $strTEST == "T_TEST_MS" 	]] || 
-	     [[ $strTEST == "T_TEST_MS" 	|| $strTEST == "NEG_BINOM_DIST_MS" 	|| $strTEST == "T_DIST_MS" 	]] || 
-	     [[ $strTEST == "LOG_NORM_DIST_MS" 	|| $strTEST == "NORM_DIST_MS" 		|| $strTEST == "GAMMA_LN_MS" 	]]
-		then
-		stringTMP=${strTEST//_/}
-		stringSEARCH="${stringTMP//MS/_MS}"
-		
-	elif [[ $strTEST == "CHISQ_INV" 	|| $strTEST == "CHISQ_DIST" 	|| $strTEST == "GET_PIVOT_DATA" ]] ||
-	     [[ $strTEST == "BETA_INV" 		|| $strTEST == "BETA_DIST" 	|| $strTEST == "LOG_INV" 	]] ||
-	     [[ $strTEST == "CHI_TEST" 		|| $strTEST == "T_INV" 		|| $strTEST == "GAMMA_INV"  	]] ||
-	     [[ $strTEST == "NORM_INV" 		|| $strTEST == "T_TEST" 	|| $strTEST == "NEG_BINOM_VERT" ]] ||
-	     [[ $strTEST == "AVERAGE_IFS" 	|| $strTEST == "SUM_IFS" 	|| $strTEST == "AVERAGE_IF" 	]] ||
-	     [[ $strTEST == "MIN_A" 		|| $strTEST == "GAMMA_LN" 	|| $strTEST == "FISHER_INV" 	]] ||
-	     [[ $strTEST == "IF_ERROR" 		|| $strTEST == "GAMMA_LN" 	|| $strTEST == "FISHER_INV" 	]] ||
-	     [[ $strTEST == "CHI_INV" 		|| $strTEST == "COUNT_IFS"  	|| $strTEST == "MAX_A" 		]] ||
-	     [[ $strTEST == "IF_NA" ]]
-		then
-		stringSEARCH=${strTEST//_/}
-	fi
-	
-	stringSEARCH="SC_HID_FUNC_$stringSEARCH"
-	
-	echo "$stringSEARCH"
-	#RU:Собираем и записываем в файл в порядке: Описание_из_описания, KeyID_описания, Имя_Макроса_описания,
-	#RU: Кручу верчу - запутать хочу. Бред сивой кобылы, но по другому не знаю как
-	file_tac=$(sed "/$stringSEARCH/,$ d" "$scfuncs" | tac | sed -e "/String 1$/,$ d" -e 's/^[\t]*//' -e 's/[{}]//' -e 's/[;]$//' | tac )
-	file_tac=$(echo $file_tac | grep -ho 'qtz.*String 2')
+	#stringSEARCH=${sc_opcode_fun[$i]}
 
- 	stringKEY=${file_tac:9:5} 					#RU:Обрезаем всё лишнее с ключа
- 	stringDG=$( echo "${file_tac:16}" | sed -e 's/..........$//')	#RU:Обрезаем начало строки для описания
-	stringNMDG=$( grep -ho "${stringSEARCH}\"" "$scfuncs")		#RU:Находим имя макроса
-	#strHELP=$(grep -rhA4 "\"${stringSEARCH:3}\"" $helpcontent | sed -e :a -e 's/<[^>]*>//g;/</N;//ba' | sed 's/^[ \t]*//;' | sed '/Syntax/,$d')
+	echo "${sc_opcode_fun[$i]}"
+	#RU:Собираем и записываем в файл в порядке: Описание_из_описания, KeyID_описания, Имя_Макроса_описания,
+	stringKEY=$(grep -A17 "${sc_opcode_fun[$i]}"'$' "$scfuncs" | sed 's/^[ \t]*//' | grep "qtz")
+	stringNMDG=$(grep -A17 "${sc_opcode_fun[$i]}"'$' "$scfuncs" | sed 's/^[ \t]*//;' | grep "U2S")
+	stringNMDG=$( echo $stringNMDG | sed -e 's/...$//' )
+	stringDG=$( echo $stringKEY | sed -e 's/..$//' )
 	
 	#RU:Пишем в файлик
-	echo "${stringDG}" >> fun_list.txt
-	echo "${stringKEY}" >> fun_list.txt
-	echo "${stringNMDG/\"/}" >> fun_list.txt
+	echo "${stringDG:22}" >> fun_list.txt
+	echo "${stringKEY:15:5}" >> fun_list.txt
+	echo "${stringNMDG:5}" >> fun_list.txt
 	#echo "$strHELP" >> fun_list.txt
 	echo "" >> fun_list.txt
 	(( i++ ))
