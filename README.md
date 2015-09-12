@@ -1,5 +1,5 @@
 # loconfuscripts
-loconfuscript v1.0 (Congregating Functions for LibreOffice)
+loconfuscript (Congregating Functions for LibreOffice)
 
 You may distribute or modify it under the terms of either the GNU LESSER GENERAL PUBLIC LICENSE Version 3.0 or later, or Mozilla Public License Version 2.0 or later.
 
