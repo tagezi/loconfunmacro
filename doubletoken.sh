@@ -10,9 +10,11 @@ testLIST=( $(cat list.log));
 i=2;
 while [[ ${testLIST[$i]} != "" ]]
 	do 
-	grep -r "\"${testLIST[$i]}\"" ../helpcontent2/source/text/scalc/
+	grep -rho "\"${testLIST[$i]}\"" ../helpcontent2/source/text/scalc/
 	
 	(( i++))
-	done > list0.log
+	done |
+	
+sort | uniq -c | sort -r > list0.log
 
 exit 0
