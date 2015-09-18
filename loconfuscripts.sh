@@ -36,12 +36,7 @@ if [ ! -f "$pricing" ]; 	then echo "The file "$pricing" do not exist."; 		exit 0
 if [ ! -f "$file_pricing" ]; 	then echo "The file "$file_pricing" do not exist."; 	exit 0; fi
 
 #EN:Create files for writing
- > fun_list.csv
-# echo -e "{| class=\"wikitable sortable\" style=\"text-align:center; font-size:10pt\"
-# |+ Names, descriptions and KeyIDs of functions
-# ! width="70" | Function Name \n! width="50" | Function IDKey \n! width="200" | Function Macros
-# ! width="200" | Function Discription  \n! width="50" | Discription IDKey
-# ! width="200" | Discription Macros \n! width="200" | Discription in Help \n|-" > fun_list.wiki
+> tmp_file
 
 #EN: Declaring arrays for search of functions
 declare -a sc_opcode_fun
@@ -139,12 +134,19 @@ while [[ ${arrayFUN[$i]} != "" ]]
 	esac
 	
 	#EN:Write CSV ans Wiki files
-	echo "$strNAME|${strQTZ}|${tokenFUN}|$strCAT|${strKEY}|${strDG}|${strNMDG}|$strHELP|" >> fun_list.csv
-	#echo -e "| $strNAME \n| ${strQTZ:17:5} \n| ${sc_opcode_fun[$i]} \n| ${strDG:22} \n| ${strKEY:15:5} \n| ${strNMDG:5} \n| $strHELP" >> fun_list.wiki
-	#echo "|-" >> fun_list.wiki
-	
+	echo "$strNAME|${strQTZ}|${tokenFUN}|$strCAT|${strDG}|${strKEY}|${strNMDG}|$strHELP|" >> tmp_file
 	(( i++ ))
 
 	done
+	
+cat tmp_file | sort > fun_list.csv
+echo -e "{| class=\"wikitable sortable\" style=\"text-align:center; font-size:9pt\"
+|+ Names, descriptions and KeyIDs of functions \n! width=70 | Function Name \n! width=40 | Function IDKey 
+! width=200 | Function Macros \n! width=50 | Сategory \n! width=200 | Function Discription
+! width=40 | Discription IDKey \n! width=200 | Discription Macros \n! width=200 | Discription in Help" > fun_list.wiki
+cat tmp_file | sort | sed 's/^/-Ч/' | tr "Ч" "\n" | sed '/^$/d;s/|/Ч|/g;s/^/|/' | tr "Ч" "\n" | sed '/^$/d;9~9d' >> fun_list.wiki
+echo "|}" >> fun_list.wiki
+	
+rm tmp_file
 
 exit 0
