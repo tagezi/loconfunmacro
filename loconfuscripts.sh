@@ -95,7 +95,8 @@ while [[ ${arrayFUN[$i]} != "" ]]
 				strCAT=$( grep $( sed 's/\(\S\+\)/\L\u\1/;s/\(\S\+[A-Za-z]\)2\(\S\+[A-Za-z]\)/\L\u\1\E2\L\u\2/' \
 					<<< $strNAME)"," $file_canalisil | grep -o "FDCat.*[A-Za-z]")
 				strNMDG="ANALYSIS_${tokenFUN:18}"
-				file_tac=$(sed "1,/$strNMDG/ d;/}.$/,$ d;s/^[ \t]*//;s/..$//" "$file_danalisis" | grep "qtz" );;
+				file_tac=$(sed "1,/$strNMDG/ d;/}.$/,$ d;s/^[ \t]*//;s/..$//" "$file_danalisis" | grep "qtz" )
+				strNMDG=$( tr "[a-z]" "[A-Z]" <<< "HID_AAI_FUNC_${tokenFUN:18}");;
 		"DATE_FUNC" ) strQTZ=$( grep -h "||$strNAME\"" "$file_datefunc" | sed 's/^[ \t]*//;' )
 				if [ $strNAME == "ROT13" ]; then strCAT="Text"; else strCAT="Date&Time"; fi 
 				strNMDG="DATE_FUNCDESC_${tokenFUN:14}"
