@@ -100,7 +100,8 @@ while [[ ${arrayFUN[$i]} != "" ]]
 		"DATE_FUNC" ) strQTZ=$( grep -h "||$strNAME\"" "$file_datefunc" | sed 's/^[ \t]*//;' )
 				if [ $strNAME == "ROT13" ]; then strCAT="Text"; else strCAT="Date&Time"; fi 
 				strNMDG="DATE_FUNCDESC_${tokenFUN:14}"
-				file_tac=$(sed "1,/$strNMDG/ d;/}.$/,$ d;s/^[ \t]*//;s/..$//" "$file_datefunc"| grep "qtz" );;
+				file_tac=$(sed "1,/$strNMDG/ d;/}.$/,$ d;s/^[ \t]*//;s/..$//" "$file_datefunc"| grep "qtz" )
+				strNMDG=$( tr "[a-z]" "[A-Z]" <<< "HID_DAI_FUNC_${tokenFUN:14}");;
 		"PRICING_F" ) strQTZ=$(grep -h "||$strNAME\"" "$file_pricing" | sed 's/^[ \t]*//;' )
 				strCAT="Financial"
 				strNMDG="PRICING_FUNCDESC_${tokenFUN:17}"

@@ -1023,8 +1023,8 @@
 |Date&Time
 |Returns the number of days of the month in which the date entered occurs
 |KQLCb
-|DATE_FUNCDESC_DaysInMonth
-|
+|HID_DAI_FUNC_DAYSINMONTH
+|Calculates the number of days of the month in which the date entered occurs.
 |-
 |DAYSINYEAR
 |vE7vk
@@ -1032,8 +1032,8 @@
 |Date&Time
 |Returns the number of days of the year in which the date entered occurs.
 |KCA2C
-|DATE_FUNCDESC_DaysInYear
-|
+|HID_DAI_FUNC_DAYSINYEAR
+|Calculates the number of days of the year in which the date entered occurs.
 |-
 |DB
 |qEGVA
@@ -2256,7 +2256,7 @@
 |Date&Time
 |Returns 1 (TRUE) if the date is a day of a leap year, otherwise 0 (FALSE).
 |kt3PZ
-|DATE_FUNCDESC_IsLeapYear
+|HID_DAI_FUNC_ISLEAPYEAR
 |
 |-
 |ISLOGICAL
@@ -2706,8 +2706,8 @@
 |Date&Time
 |Determines the number of months in a specific period.
 |FqH9T
-|DATE_FUNCDESC_DiffMonths
-|
+|HID_DAI_FUNC_DIFFMONTHS
+|Calculates the difference in months between two dates.
 |-
 |MROUND
 |kkrhF
@@ -3426,8 +3426,8 @@
 |Text
 |Encrypts or decrypts a text using the ROT13 algorithm
 |4wRUM
-|DATE_FUNCDESC_Rot13
-|
+|HID_DAI_FUNC_ROT13
+|Encrypts a character string by moving the characters 13 positions in the alphabet. After the letter Z, the alphabet begins again (Rotation). By applying the encryption function again to the resulting code, you can decrypt the text.
 |-
 |ROUND
 |CY3TR
@@ -4209,8 +4209,8 @@
 |Date&Time
 |Returns the number of weeks of the year in which the date entered occurs
 |3XCdG
-|DATE_FUNCDESC_WeeksInYear
-|
+|HID_DAI_FUNC_WEEKSINYEAR
+|Calculates the number of weeks of the year in which the date entered occurs. The number of weeks is defined as follows: a week that spans two years is added to the year in which most days of that week occur.
 |-
 |WEEKS
 |pkA8s
@@ -4218,8 +4218,8 @@
 |Date&Time
 |Calculates the number of weeks in a specific period
 |c9Yb3
-|DATE_FUNCDESC_DiffWeeks
-|
+|HID_DAI_FUNC_DIFFWEEKS
+|Calculates the difference in weeks between two dates.
 |-
 |WEIBULL.DIST
 |eUGHh
@@ -4308,8 +4308,8 @@
 |Date&Time
 |Calculates the number of years in a specific period.
 |ni77P
-|DATE_FUNCDESC_DiffYears
-|
+|HID_DAI_FUNC_DIFFYEARS
+|Calculates the difference in years between two dates.
 |-
 |YIELDDISC
 |etCXF
