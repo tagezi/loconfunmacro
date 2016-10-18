@@ -16,10 +16,12 @@ datefunc="../translations/source/ru/scaddins/source/datefunc.po"
 file_datefunc="../workdir/SrsPartMergeTarget/scaddins/source/datefunc/datefunc.src"
 analysis="../translations/source/ru/scaddins/source/analysis.po"
 file_analysis="../workdir/SrsPartMergeTarget/scaddins/source/analysis/analysis_funcnames.src"
-file_danalisis="../workdir/SrsPartMergeTarget/scaddins/source/analysis/analysis.src"
-file_canalisil="../scaddins/source/analysis/analysishelper.cxx"
+file_danalysis="../workdir/SrsPartMergeTarget/scaddins/source/analysis/analysis.src"
+file_canalysis="../scaddins/source/analysis/analysishelper.cxx"
 pricing="../translations/source/ru/scaddins/source/pricing.po"
 file_pricing="../workdir/SrsPartMergeTarget/scaddins/source/pricing/pricing.src"
+
+echo "variables are appointed"
 
 #EN:Are there files for work?
 if [ ! -f "$resource" ]; 	then echo "The file "$resource" do not exist."; 	exit 0; fi
@@ -30,13 +32,17 @@ if [ ! -f "$datefunc" ]; 	then echo "The file "$datefunc" do not exist."; 	exit 
 if [ ! -f "$file_datefunc" ]; 	then echo "The file "$file_datefunc" do not exist."; 	exit 0; fi
 if [ ! -f "$analysis" ]; 	then echo "The file "$analysis" do not exist."; 	exit 0; fi
 if [ ! -f "$file_analysis" ]; 	then echo "The file "$file_analysis" do not exist."; 	exit 0; fi
-if [ ! -f "$file_datefunc" ]; 	then echo "The file "$file_datefunc" do not exist."; 	exit 0; fi
-if [ ! -f "$file_canalisil" ]; 	then echo "The file "$file_canalisil" do not exist."; 	exit 0; fi
+if [ ! -f "$file_danalysis" ]; 	then echo "The file "$file_danalysis" do not exist."; 	exit 0; fi
+if [ ! -f "$file_canalysis" ]; 	then echo "The file "$file_canalysis" do not exist."; 	exit 0; fi
 if [ ! -f "$pricing" ]; 	then echo "The file "$pricing" do not exist."; 		exit 0; fi
 if [ ! -f "$file_pricing" ]; 	then echo "The file "$file_pricing" do not exist."; 	exit 0; fi
 
+echo "checking files done"
+
 #EN:Create files for writing
-> tmp_file
+:> tmp_file
+
+echo "tenp_file is created"
 
 #EN: Declaring arrays for search of functions
 declare -a sc_opcode_fun
@@ -45,6 +51,8 @@ declare -a analysis_fun
 declare -a pricing_fun
 declare -a arrayFUN
 
+echo "arrays are declared"
+
 #EN:Make a selection of functions and codes from the formula/source/core/resource.po file 
 sc_opcode_fun=( $(grep -rhA2 '\"SC_OPCODE' "$resource" | 
 	sed -e '/\"string.text\"/d'  -e 's/msgid \"//;s/\\n\"//;s/\"//' -e '2~2d' |
@@ -52,19 +60,23 @@ sc_opcode_fun=( $(grep -rhA2 '\"SC_OPCODE' "$resource" |
 	sed -e '/ *#/d;/SC_OPCODE_TABLE_REF/d;/SC_OPCODE_NO_NAME/d'))
 
 #EN:Make a selection of functions and codes from the scaddins/source/datefunc.po file
-date_funcname_fun=( $(grep -rhA2 '\"DATE_FUNCNAME' "$datefunc" | 
-	sed -e '/\"string.text\"/d'  -e 's/msgid \"//;s/\\n\"//;s/\"//' -e '2~2d' ))
+#date_funcname_fun=( $(grep -rhA2 '\"DATE_FUNCNAME' "$datefunc" | 
+#	sed -e '/\"string.text\"/d'  -e 's/msgid \"//;s/\\n\"//;s/\"//' -e '2~2d' ))
 
 #EN:Make a selection of functions and codes from the scaddins/source/analysis.po file
-analysis_fun=( $(grep -rhA2 '\"ANALYSIS_FUNCNAME' "$analysis" | 
-	sed -e '/\"string.text\"/d'  -e 's/msgid \"//;s/\\n\"//;s/\"//' -e '2~2d' ))
+#analysis_fun=( $(grep -rhA2 '\"ANALYSIS_FUNCNAME' "$analysis" | 
+#	sed -e '/\"string.text\"/d'  -e 's/msgid \"//;s/\\n\"//;s/\"//' -e '2~2d' ))
 
 #EN:Make a selection of functions and codes from the scaddins/source/pricing.po file
-pricing_fun=( $(grep -rhA2 '\"PRICING_FUNCNAME' "$pricing" |
-	sed -e '/\"string.text\"/d'  -e 's/msgid \"//;s/\\n\"//;s/\"//' -e '2~2d' ))
+#pricing_fun=( $(grep -rhA2 '\"PRICING_FUNCNAME' "$pricing" |
+#	sed -e '/\"string.text\"/d'  -e 's/msgid \"//;s/\\n\"//;s/\"//' -e '2~2d' ))
 
+echo "sampling function names is made"
+
+# merger arrays
 arrayFUN=(${pricing_fun[@]} ${date_funcname_fun[@]} ${analysis_fun[@]} ${sc_opcode_fun[@]})
 
+echo "arrays are merged"
 i=0
 
 while [[ ${arrayFUN[$i]} != "" ]] 
@@ -76,7 +88,8 @@ while [[ ${arrayFUN[$i]} != "" ]]
 	#EN:Skip function: NEG, GOALSEEK, MVALUE, MULTIRANGE, MULTIPLE.OPERATIONS
 	if [[ ${arrayFUN[$i]} == "NEG" 		|| ${arrayFUN[$i]} == "MULTIPLE.OPERATIONS" ]] ||
 	   [[ ${arrayFUN[$i]} == "MULTIRANGE" 	|| ${arrayFUN[$i]} == "GOALSEEK" ]] ||
-	   [[ ${arrayFUN[$i]} == "MVALUE" ]]
+	   [[ ${arrayFUN[$i]} == "MVALUE" 	|| ${arrayFUN[$i]} == "DURATION" ]] ||
+	   [[ ${arrayFUN[$i]} == "EFFECTIVE" ]]
 		then 
 		(( i++ ))
 		tokenFUN=${arrayFUN[$i]}
@@ -84,33 +97,33 @@ while [[ ${arrayFUN[$i]} != "" ]]
 	fi
 
 	strNAME=${arrayFUN[$i]}
-
+	
 	case "${tokenFUN:0:9}" in
-		"SC_OPCODE" ) strQTZ=$( grep -h "||${strNAME/\./\\\.}\"" "$core_resource")
+		"SC_OPCODE" ) strQTZ=$( grep -h "‖${strNAME/\./\\\.}\"" "$core_resource")
 				strCAT=$( grep -A17 "$tokenFUN"'$' "$scfuncs" | sed 's/^[ \t]*//;s/.$//'   | grep "ID_FUNCTION")
 				strNMDG=$(grep -A17 "$tokenFUN"'$' "$scfuncs" | sed 's/^[ \t]*//;s/...$//' | grep "U2S")
 				strNMDG=${strNMDG:5}
 				file_tac=$( grep -A17 "$tokenFUN"'$' "$scfuncs" | sed 's/^[ \t]*//;s/..$//'  | grep "qtz");;
-		"ANALYSIS_" ) strQTZ=$( grep -h "||$strNAME\"" "$file_analysis")
+		"ANALYSIS_" ) strQTZ=$( grep -h "‖$strNAME\"" "$file_analysis")
 				strCAT=$( grep $( sed 's/\(\S\+\)/\L\u\1/;s/\(\S\+[A-Za-z]\)2\(\S\+[A-Za-z]\)/\L\u\1\E2\L\u\2/' \
-					<<< $strNAME)"," $file_canalisil | grep -o "FDCat.*[A-Za-z]")
+					<<< $strNAME)"," $file_canalysis | grep -o "FDCat.*[A-Za-z]")
 				strNMDG="ANALYSIS_${tokenFUN:18}"
-				file_tac=$(sed "1,/$strNMDG/ d;/}.$/,$ d;s/^[ \t]*//;s/..$//" "$file_danalisis" | grep "qtz" )
+				file_tac=$(sed "1,/$strNMDG/ d;/}.$/,$ d;s/^[ \t]*//;s/..$//" "$file_danalysis" | grep "qtz" )
 				strNMDG=$( tr "[a-z]" "[A-Z]" <<< "HID_AAI_FUNC_${tokenFUN:18}");;
-		"DATE_FUNC" ) strQTZ=$( grep -h "||$strNAME\"" "$file_datefunc" | sed 's/^[ \t]*//;' )
+		"DATE_FUNC" ) strQTZ=$( grep -h "‖$strNAME\"" "$file_datefunc" | sed 's/^[ \t]*//;' )
 				if [ $strNAME == "ROT13" ]; then strCAT="Text"; else strCAT="Date&Time"; fi 
 				strNMDG="DATE_FUNCDESC_${tokenFUN:14}"
 				file_tac=$(sed "1,/$strNMDG/ d;/}.$/,$ d;s/^[ \t]*//;s/..$//" "$file_datefunc"| grep "qtz" )
 				strNMDG=$( tr "[a-z]" "[A-Z]" <<< "HID_DAI_FUNC_${tokenFUN:14}");;
-		"PRICING_F" ) strQTZ=$(grep -h "||$strNAME\"" "$file_pricing" | sed 's/^[ \t]*//;' )
+		"PRICING_F" ) strQTZ=$(grep -h "‖$strNAME\"" "$file_pricing" | sed 's/^[ \t]*//;' )
 				strCAT="Financial"
 				strNMDG="PRICING_FUNCDESC_${tokenFUN:17}"
 				file_tac=$(sed "1,/$strNMDG/ d;/}.$/,$ d;s/^[ \t]*//;s/..$//" "$file_pricing" | grep "qtz" );;
 	esac
 	
-	strQTZ=$( sed 's/^[ \t]*//;s/^.\{15\}//;s/\(^.....\)\(.*\)/\1/' <<< $strQTZ )
+	strQTZ=${strQTZ:17:5}
 	strKEY=${file_tac:15:5}
-	strDG=${file_tac:22}
+	strDG=${file_tac:21}
 	strHELP=$(grep -rhA4 "\"$strNMDG\"" $helpcontent | 
 				    sed -e :a -e 's/<[^>]*>//g;/</N;//ba;s/^[ \t]*//;' | sed '/Syntax/,$d' | tr -d '\n')
 	
@@ -140,15 +153,23 @@ while [[ ${arrayFUN[$i]} != "" ]]
 	(( i++ ))
 
 	done
-	
+
+echo "loop is made"
+
 cat tmp_file | sort > fun_list.csv
+
+echo "file fun_list.csv is written"
 echo -e "{| class=\"wikitable sortable\" style=\"text-align:center; font-size:9pt\"
 |+ Names, descriptions and KeyIDs of functions \n! width=70 | Function Name \n! width=40 | Function IDKey 
 ! width=200 | Function Macros \n! width=50 | Сategory \n! width=200 | Function Discription
 ! width=40 | Discription IDKey \n! width=200 | Discription Macros \n! width=200 | Discription in Help" > fun_list.wiki
 cat tmp_file | sort | sed 's/^/-Ч/' | tr "Ч" "\n" | sed '/^$/d;s/|/Ч|/g;s/^/|/' | tr "Ч" "\n" | sed '/^$/d;9~9d' >> fun_list.wiki
 echo "|}" >> fun_list.wiki
+
+echo "file fun_wiki.wiki is written"
 	
 rm tmp_file
+
+echo "file tmp_file is deleted"
 
 exit 0
