@@ -21,7 +21,7 @@ file_canalysis="../scaddins/source/analysis/analysishelper.cxx"
 pricing="../translations/source/ru/scaddins/source/pricing.po"
 file_pricing="../workdir/SrsPartMergeTarget/scaddins/source/pricing/pricing.src"
 
-echo "variables are appointed"
+echo "variables were appointed"
 
 #EN:Are there files for the work?
 if [ ! -f "$resource"       ];  then echo "The file "$resource" do not exist.";         exit 0; fi
@@ -37,12 +37,12 @@ if [ ! -f "$file_canalysis" ];  then echo "The file "$file_canalysis" do not exi
 if [ ! -f "$pricing"        ];  then echo "The file "$pricing" do not exist.";          exit 0; fi
 if [ ! -f "$file_pricing"   ];  then echo "The file "$file_pricing" do not exist.";     exit 0; fi
 
-echo "checking files done"
+echo "checking files were done"
 
 #EN:Create files for writing
 :> tmp_file
 
-echo "tmp_file is created"
+echo "tmp_file was created"
 
 #EN: Declaring arrays for search of functions
 declare -a sc_opcode_fun
@@ -51,7 +51,7 @@ declare -a analysis_fun
 declare -a pricing_fun
 declare -a arrayFUN
 
-echo "arrays are declared"
+echo "arrays were declared"
 
 #EN:Make a selection of functions and codes from the formula/source/core/resource.po file 
 sc_opcode_fun=( $(grep -rhA2 '\"SC_OPCODE' "$resource" | 
@@ -71,12 +71,12 @@ analysis_fun=( $(grep -rhA2 '\"ANALYSIS_FUNCNAME' "$analysis" |
 pricing_fun=( $(grep -rhA2 '\"PRICING_FUNCNAME' "$pricing" |
                sed -e '/\"string.text\"/d'  -e 's/msgid \"//;s/\\n\"//;s/\"//' -e '2~2d' ))
 
-echo "sampling function names is made"
+echo "sampling function names was made"
 
 # merger arrays
 arrayFUN=(${pricing_fun[@]} ${date_funcname_fun[@]} ${analysis_fun[@]} ${sc_opcode_fun[@]})
 
-echo "arrays are merged"
+echo "arrays were merged"
 i=0
 
 while [[ ${arrayFUN[$i]} != "" ]] 
@@ -174,11 +174,11 @@ while [[ ${arrayFUN[$i]} != "" ]]
 
     done
 
-echo "loop is made"
+echo "loop was made"
 
 cat tmp_file | sort > fun_list.csv
 
-echo "file fun_list.csv is written"
+echo "file fun_list.csv was written"
 
 echo -e "{| class=\"wikitable sortable\" style=\"text-align:center; font-size:9pt\"
 |+ Names, descriptions and KeyIDs of functions \n! width=70 | Function Name \n! width=40 | Function IDKey 
@@ -187,10 +187,10 @@ echo -e "{| class=\"wikitable sortable\" style=\"text-align:center; font-size:9p
 cat tmp_file | sort | sed 's/^/-‖/' | tr "‖" "\n" | sed '/^$/d;s/|/‖|/g;s/^/|/' | tr "‖" "\n" | sed '/^$/d;9~9d' >> fun_list.wiki
 echo "|}" >> fun_list.wiki
 
-echo "file fun_wiki.wiki is written"
+echo "file fun_wiki.wiki was written"
     
 rm tmp_file
 
-echo "file tmp_file is deleted"
+echo "file tmp_file was deleted"
 
 exit 0
