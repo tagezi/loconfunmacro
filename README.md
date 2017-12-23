@@ -1,9 +1,9 @@
 # loconfuscripts
-loconfuscript (Congregating Functions for LibreOffice)
+loconfuscript (Congregating Functions for LibreOffice Calc)
 
 You may distribute or modify it under the terms of either the GNU LESSER GENERAL PUBLIC LICENSE Version 3.0 or later, or Mozilla Public License Version 2.0 or later.
 
-The purpose of this script is to put together information about all available functions of Calc for l10n and documentation teams. It may allow to see a broad picture about functions, and find mistakes and inefficiencies and make it easier to analyze what is happening with functions of Calc.
+The purpose of this script is to put together information on all available functions of Calc for l10n and documentation teams. It may allow you to see a broad picture about functions, to find mistakes and inefficiencies and make it easier to analyze what is happening with functions of Calc.
 
 This script uses directories 'workdir', 'helpcontent2' and 'translations' in the directory, where LibreOffice was build from source code.
 
@@ -33,4 +33,4 @@ $ ./loconfuscripts.sh
 The script creates two new files: fun_list.csv and fun_list.wiki.
 
 The file CSV has field separator | (vertical bar). It is used because other characters occur in Help text often.
-The file Wiki is the prepared wiki table as shown here: https://wiki.documentfoundation.org/User:Tagezi/CalcFunction
+The file Wiki is the prepared wiki table as shown there: https://wiki.documentfoundation.org/User:Tagezi/CalcFunction
